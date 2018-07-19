@@ -21,7 +21,8 @@ nuxeo.data.dir=$NUXEO_DATA
 EOF
 
     if [ -n "$NUXEO_CUSTOM_PARAM" ]; then
-      printf "%b\n" "$NUXEO_CUSTOM_PARAM" >> $NUXEO_CONF
+      NUXEO_CUSTOM_PARAM_EVAL=`eval echo $NUXEO_CUSTOM_PARAM`
+      printf "%b\n" "$NUXEO_CUSTOM_PARAM_EVAL" >> $NUXEO_CONF
     fi
     
     # Deprecated since 9.1, put a nuxeo.conf file in /docker-entrypoint-initnuxeo.d instead
