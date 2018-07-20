@@ -22,6 +22,8 @@ EOF
 
     if [ -n "$NUXEO_CUSTOM_PARAM" ]; then
       NUXEO_CUSTOM_PARAM_EVAL=`eval echo $NUXEO_CUSTOM_PARAM`
+      echo "Testing: $NUXEO_CUSTOM_PARAM"
+      echo "Testing: $NUXEO_CUSTOM_PARAM_EVAL"
       printf "%b\n" "$NUXEO_CUSTOM_PARAM_EVAL" >> $NUXEO_CONF
     fi
     
