@@ -21,11 +21,7 @@ nuxeo.data.dir=$NUXEO_DATA
 EOF
 
     if [ -n "$NUXEO_CUSTOM_PARAM" ]; then
-#      NUXEO_CUSTOM_PARAM_EVAL=`eval echo $NUXEO_CUSTOM_PARAM`
-#      echo $NUXEO_CUSTOM_PARAM >> $NUXEO_CUSTOM_PARAM_EVAL
       NUXEO_CUSTOM_PARAM_INSTANCE=${NUXEO_CUSTOM_PARAM/__cfinstanceid__/$CF_INSTANCE_INDEX}
-      echo "Testing: $NUXEO_CUSTOM_PARAM"
-      echo "Testing: $NUXEO_CUSTOM_PARAM_INSTANCE"
       printf "%b\n" "$NUXEO_CUSTOM_PARAM_INSTANCE" >> $NUXEO_CONF
     fi
     
