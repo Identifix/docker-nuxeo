@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 set -e
 
 
@@ -7,6 +7,13 @@ NUXEO_LOG=${NUXEO_LOG:-/var/log/nuxeo}
 NUXEO_FORCE_CONF=${NUXEO_FORCE_CONF:-false}
 NUXEO_MPINSTALL_OPTIONS=${NUXEO_MPINSTALL_OPTIONS:---relax=false}
 
+# Allow supporting arbitrary user id
+if ! whoami &> /dev/null; then
+  if [ -w /etc/passwd ]; then
+    sed /^nuxeo/d /etc/passwd > /tmp/passwd && cp /tmp/passwd /etc/passwd
+    echo "${NUXEO_USER:-nuxeo}:x:$(id -u):0:${NUXEO_USER:-nuxeo} user:${NUXEO_HOME}:/sbin/nologin" >> /etc/passwd
+  fi
+fi
 
 if [ "$1" = 'nuxeoctl' ]; then
   if [[ ( ! -f $NUXEO_HOME/configured ) || "true" == $NUXEO_FORCE_CONF  ]]; then
@@ -23,15 +30,15 @@ EOF
     if [ -n "$NUXEO_CUSTOM_PARAM" ]; then
       printf "%b\n" "$NUXEO_CUSTOM_PARAM" >> $NUXEO_CONF
     fi
-    
+
     # Deprecated since 9.1, put a nuxeo.conf file in /docker-entrypoint-initnuxeo.d instead
     if [ -f /nuxeo.conf ]; then
       cat /nuxeo.conf >> $NUXEO_CONF
-    fi    
+    fi
 
     if [ -f /docker-entrypoint-initnuxeo.d/nuxeo.conf ]; then
       cat /docker-entrypoint-initnuxeo.d/nuxeo.conf >> $NUXEO_CONF
-    fi    
+    fi
     touch $NUXEO_HOME/configured
   fi
 
@@ -39,7 +46,7 @@ EOF
     case "$f" in
       *.sh)  echo "$0: running $f"; . "$f" ;;
       *.zip) echo "$0: installing Nuxeo package $f"; nuxeoctl mp-install $f ${NUXEO_MPINSTALL_OPTIONS} --accept=true ;;
-      instance.clid) echo "$0: moving clid to $NUXEO_DATA"; mv $f $NUXEO_DATA/instance.clid ;;      
+      instance.clid) echo "$0: moving clid to $NUXEO_DATA"; mv $f $NUXEO_DATA/instance.clid ;;
       *)     echo "$0: ignoring $f" ;;
     esac
   done
@@ -59,12 +66,6 @@ EOF
   # Install packages if exist
   if [ -n "$NUXEO_PACKAGES" ]; then
     nuxeoctl mp-install $NUXEO_PACKAGES $NUXEO_MPINSTALL_OPTIONS --accept=true
-  fi
-
-  if [ "$2" = "console" ]; then
-    exec nuxeoctl console
-  else
-    exec "$@"
   fi
 
 fi

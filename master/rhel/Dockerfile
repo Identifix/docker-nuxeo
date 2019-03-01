@@ -18,8 +18,9 @@ LABEL name="nuxeo/nuxeo" \
       io.openshift.min-cpu="2"
 
 # install java
-RUN yum install -y \
-       java-1.8.0-openjdk wget unzip
+RUN yum-config-manager --disable rhel-7-server-htb-rpms && \
+    yum install -y \
+       java-1.8.0-openjdk java-1.8.0-openjdk-devel wget unzip
 
 #Add repositories need it for ffmpeg2theora and ffmpeg
 ARG EPEL_RPM_URL=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -55,10 +56,11 @@ ADD help.1 /help.1
 
 
 # Remove setuid/setgid binaries from images for security
-RUN find / -perm +6000 -type f -exec chmod a-s {} \; || true
+RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 
 ENV NUXEO_USER nuxeo
 ENV NUXEO_HOME /opt/nuxeo/server
+ENV HOME /opt/nuxeo/server
 ARG NUXEO_VERSION=master
 ARG NUXEO_DIST_URL=http://community.nuxeo.com/static/latest-snapshot/nuxeo-server-tomcat,SNAPSHOT.zip
 ARG NUXEO_MD5=noMD5check
@@ -96,7 +98,8 @@ RUN chown -R 1000:0 $NUXEO_HOME && chmod -R g+rwX $NUXEO_HOME \
     && mkdir -p /var/run/nuxeo \
     && chown -R 1000:0 /var/run/nuxeo && chmod -R g+rwX /var/run/nuxeo \
     && mkdir -p /docker-entrypoint-initnuxeo.d \
-    && chown -R 1000:0 /docker-entrypoint-initnuxeo.d && chmod -R g+rwX /docker-entrypoint-initnuxeo.d 
+    && chown -R 1000:0 /docker-entrypoint-initnuxeo.d && chmod -R g+rwX /docker-entrypoint-initnuxeo.d  \
+    && chmod g=u /etc/passwd
 
 ENV PATH $NUXEO_HOME/bin:$PATH
 

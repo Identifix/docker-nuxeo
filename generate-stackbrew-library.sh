@@ -5,15 +5,22 @@ set -eu
 versions=(
 	7.10
 	8.10
-        9.3
-        9.10
+	9.10
+	10.10
 )
 
 declare -A aliases=(
 	[7.10]='7 LTS-2015'
 	[8.10]='8 LTS-2016'
-	[9.3]='FT'
-	[9.10]='9 LTS-2017 LTS latest'
+	[9.10]='9 LTS-2017'
+	[10.10]='10 LTS-2019 LTS FT latest'
+)
+
+declare -A arch
+arch=(
+	[7.10]='amd64'
+	[8.10]='amd64'
+	[9.10]='amd64'
 )
 
 variants=(
@@ -49,8 +56,8 @@ dirCommit() {
 cat <<-EOH
 # this file is generated via https://github.com/nuxeo/docker-nuxeo/blob/$(fileCommit "$self")/$self
 
-Maintainers: Damien Metzler <dmetzler@nuxeo.com> (@damienmetzler),
-             Arnaud Kervern <akervern@nuxeo.com> (@arnaudke)
+Maintainers: Damien Metzler <dmetzler@nuxeo.com> (@dmetzler),
+             Arnaud Kervern <akervern@nuxeo.com> (@akervern)
 GitRepo: https://github.com/nuxeo/docker-nuxeo.git
 EOH
 
@@ -63,7 +70,7 @@ join() {
 for variant in "${variants[@]}"; do
 	for version in "${versions[@]}"; do
 		if [ $variant == "ubuntu" ]; then
-			DIR=$version		
+			DIR=$version
 		else
 			DIR=$version/$variant
 		fi
@@ -83,6 +90,7 @@ for variant in "${variants[@]}"; do
 		echo
 		cat <<-EOE
 			Tags: $(join ', ' "${variantAliases[@]}")
+			Architectures: ${arch[$version]:-amd64, arm64v8}
 			GitCommit: $commit
 			Directory: $DIR
 		EOE

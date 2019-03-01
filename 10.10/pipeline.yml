@@ -1,0 +1,104 @@
+---
+jobs:
+- name: build
+  public: true
+  serial_groups: [version]
+  plan:
+  - aggregate:
+    - get: project
+      resource: docker-nuxeo
+      trigger: true
+    - get: version
+      params: {pre: rc}
+  - put: version
+    params: {file: version/version}
+  - put: identifix-docker-repo
+    params:
+      build: project
+      dockerfile: project/9.10/Dockerfile
+      tag: version/version
+      tag_as_latest: false
+
+- name: shipit
+  public: true
+  serial_groups: [version]
+  plan:
+  - aggregate:
+    - get: project
+      resource: docker-nuxeo
+      passed: [build]
+    - get: identifix-docker-repo
+      passed: [build]
+      params: {save: true}
+    - get: version
+      passed: [build]
+      params: {bump: final}
+  - put: version
+    params: {file: version/version}
+  - put: identifix-docker-repo
+    params:
+      load: identifix-docker-repo
+      dockerfile: project/9.10/Dockerfile
+      tag: project/9.10/version
+      tag_as_latest: true
+
+- name: major
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    params: {bump: major, pre: rc}
+  - put: version
+    params: {file: version/version}
+
+- name: minor
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    params: {bump: minor, pre: rc}
+  - put: version
+    params: {file: version/version}
+
+- name: patch
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    passed: [shipit]
+    params: {bump: patch, pre: rc}
+    trigger: true
+  - put: version
+    params: {file: version/version}
+
+resources:
+- name: docker-nuxeo
+  type: git
+  check_every: 5m
+  source:
+    uri: ((docker-nuxeo.git_uri))
+    private_key: ((github.ssh_key))
+    paths: ['10.10']
+    ignore_paths:
+    - LICENSE
+    - NOTICE.md
+    - pipeline.yml
+    - README.md
+
+- name: version
+  type: semver
+  source:
+    driver: git
+    initial_version: 1.0.0-rc.0
+    uri: ((docker-nuxeo.git_uri))
+    branch: version
+    file: version
+    private_key: ((github.ssh_key))
+
+- name: identifix-docker-repo
+  type: docker-image
+  source:
+    repository: ((docker-registry.repo))/((docker-nuxeo.docker_image_name))
+    username: ((docker-registry.username))
+    password: ((docker-registry.password))
+

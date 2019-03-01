@@ -15,14 +15,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     exiftool \
     ghostscript \
     libreoffice \
+    ffmpeg \
+    x264 \
  && rm -rf /var/lib/apt/lists/*
 
 
 # Remove setuid/setgid binaries from images for security
-RUN find / -perm +6000 -type f -exec chmod a-s {} \; || true
+RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 
 ENV NUXEO_USER nuxeo
 ENV NUXEO_HOME /opt/nuxeo/server
+ENV HOME /opt/nuxeo/server
 ARG NUXEO_VERSION=master
 ARG NUXEO_DIST_URL=http://community.nuxeo.com/static/latest-snapshot/nuxeo-server-tomcat,SNAPSHOT.zip
 ARG NUXEO_MD5=noMD5check
@@ -60,7 +63,8 @@ RUN chown -R 1000:0 $NUXEO_HOME && chmod -R g+rwX $NUXEO_HOME \
     && mkdir -p /var/run/nuxeo \
     && chown -R 1000:0 /var/run/nuxeo && chmod -R g+rwX /var/run/nuxeo \
     && mkdir -p /docker-entrypoint-initnuxeo.d \
-    && chown -R 1000:0 /docker-entrypoint-initnuxeo.d && chmod -R g+rwX /docker-entrypoint-initnuxeo.d 
+    && chown -R 1000:0 /docker-entrypoint-initnuxeo.d && chmod -R g+rwX /docker-entrypoint-initnuxeo.d  \
+    && chmod g=u /etc/passwd
 
 ENV PATH $NUXEO_HOME/bin:$PATH
 
