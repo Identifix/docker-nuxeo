@@ -26,9 +26,10 @@ nuxeo.log.dir=$NUXEO_LOG
 nuxeo.pid.dir=/var/run/nuxeo
 nuxeo.data.dir=$NUXEO_DATA
 EOF
-
+    #this code block is part of our Identifix customizations
     if [ -n "$NUXEO_CUSTOM_PARAM" ]; then
-      printf "%b\n" "$NUXEO_CUSTOM_PARAM" >> $NUXEO_CONF
+      NUXEO_CUSTOM_PARAM_INSTANCE=${NUXEO_CUSTOM_PARAM/__cfinstanceid__/$CF_INSTANCE_INDEX}
+      printf "%b\n" "$NUXEO_CUSTOM_PARAM_INSTANCE" >> $NUXEO_CONF
     fi
 
     # Deprecated since 9.1, put a nuxeo.conf file in /docker-entrypoint-initnuxeo.d instead
