@@ -15,7 +15,7 @@ jobs:
   - put: identifix-docker-repo
     params:
       build: project
-      dockerfile: project/9.10/Dockerfile
+      dockerfile: project/10.10/Dockerfile
       tag: version/version
       tag_as_latest: false
 
@@ -38,8 +38,8 @@ jobs:
   - put: identifix-docker-repo
     params:
       load: identifix-docker-repo
-      dockerfile: project/9.10/Dockerfile
-      tag: project/9.10/version
+      dockerfile: project/10.10/Dockerfile
+      tag: project/10.10/version
       tag_as_latest: true
 
 - name: major
