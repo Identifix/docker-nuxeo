@@ -78,6 +78,7 @@ resources:
   source:
     uri: ((docker-nuxeo.git_uri))
     private_key: ((github.ssh_key))
+    branch: nuxeo2019update
     paths: ['10.10']
     ignore_paths:
     - LICENSE
