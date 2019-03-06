@@ -24,7 +24,7 @@ RUN wget http://apt.nuxeo.org/pool/releases/ffmpeg-nuxeo_2.8.5-1_amd64.deb
 RUN    dpkg -i ffmpeg-nuxeo_2.8.5-1_amd64.deb
 
 # Remove setuid/setgid binaries from images for security
-RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
+RUN find / -perm +6000 -type f -exec chmod a-s {} \; || true
 
 ENV NUXEO_USER nuxeo
 ENV NUXEO_HOME /opt/nuxeo/server
