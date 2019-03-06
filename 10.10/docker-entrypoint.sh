@@ -26,7 +26,7 @@ nuxeo.log.dir=$NUXEO_LOG
 nuxeo.pid.dir=/var/run/nuxeo
 nuxeo.data.dir=$NUXEO_DATA
 EOF
-    #this code block is part of our Identifix customizations
+    #this code block is part of our Identifix customization
     if [ -n "$NUXEO_CUSTOM_PARAM" ]; then
       NUXEO_CUSTOM_PARAM_INSTANCE=${NUXEO_CUSTOM_PARAM/__cfinstanceid__/$CF_INSTANCE_INDEX}
       printf "%b\n" "$NUXEO_CUSTOM_PARAM_INSTANCE" >> $NUXEO_CONF
